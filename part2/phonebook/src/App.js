@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
+import personSerice from './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
@@ -11,10 +11,10 @@ const App = () => {
   const [ keyword, setKeyword] = useState('')
 
   const fetchPersons = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personSerice
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }
 
@@ -26,25 +26,52 @@ const App = () => {
 
   const handleClick = (event) => {
     event.preventDefault()
-    const sameNamePersons = persons.filter(person => person.name === newName)
-    if (sameNamePersons.length > 0) {
-      return alert(`${newName} is already added to numberbook`)
-    }
-
+    const sameNamePerson = persons.find(person => person.name === newName)
     const newPerson = {
       name: newName, number: newNumber
     }
-    setNewName('')
-    setNewNumber('')
-    setPersons(persons.concat(newPerson))
+
+    if (sameNamePerson
+      && window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+      personSerice
+        .update(sameNamePerson.id, newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
+        })
+    } else {
+      personSerice
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+    }
   }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
 
-  const handlenumberChange = (event) => {
+  const handleNumberChange = (event) => {
     setNewNumber(event.target.value)
+  }
+
+  const handlePersonDelete = id => {
+    const person = persons.find(p => p.id === id)
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personSerice
+        .destroy(id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== id))
+        })
+        .catch(error => {
+          alert(
+            `the person '${person.name}' was already deleted from server`
+          )
+          setPersons(persons.filter(p => p.id !== id))
+        })
+    }
   }
 
   const personsToShow = keyword === ''
@@ -60,11 +87,11 @@ const App = () => {
         newName={newName}
         newNumber={newNumber}
         handleNameChange={handleNameChange}
-        handlenumberChange={handlenumberChange}
+        handleNumberChange={handleNumberChange}
         handleClick={handleClick}
       />
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} handlePersonDelete={handlePersonDelete} />
     </div>
   )
 }
