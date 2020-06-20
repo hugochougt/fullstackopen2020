@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import personSerice from './services/persons'
+
+import './index.css'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ keyword, setKeyword] = useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ msgType, setMsgType ] = useState(null)
 
   const fetchPersons = () => {
     personSerice
@@ -38,6 +43,15 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
         })
+        .catch(error => {
+          setMessage(`Information of ${newName} has already been removed from server`)
+          setMsgType('error')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+
+          setPersons(persons.filter(p => p.id !== sameNamePerson.id))
+        })
     } else {
       personSerice
         .create(newPerson)
@@ -46,6 +60,11 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+      setMessage(`Added ${newName}`)
+      setMsgType('success')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 
@@ -81,6 +100,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} type={msgType} />
       <Filter handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
