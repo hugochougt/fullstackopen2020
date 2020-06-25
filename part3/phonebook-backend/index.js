@@ -44,9 +44,11 @@ app.post('/api/persons', (req, res) => {
       number: number
     })
 
-    person.save().then(savedPerson => {
-      res.json(savedPerson)
-    })
+    person.save()
+      .then(savedPerson => {
+        res.json(savedPerson)
+      })
+      .catch(error => next(error))
   } else {
     return res.status(400).json({
       error: 'name or number missing'
@@ -98,8 +100,10 @@ app.use(unknownEndpoint)
 const errorHandler = (error, req, res, next) => {
   console.log(error)
 
-  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+  if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
