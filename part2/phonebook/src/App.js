@@ -44,13 +44,11 @@ const App = () => {
           setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
         })
         .catch(error => {
-          setMessage(`Information of ${newName} has already been removed from server`)
+          setMessage(error.response.data.error)
           setMsgType('error')
           setTimeout(() => {
             setMessage(null)
           }, 5000)
-
-          setPersons(persons.filter(p => p.id !== sameNamePerson.id))
         })
     } else {
       personSerice
@@ -59,12 +57,19 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setMessage(`Added ${newName}`)
+          setMsgType('success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
-      setMessage(`Added ${newName}`)
-      setMsgType('success')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+        .catch(error => {
+          setMessage(error.response.data.error)
+          setMsgType('error')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
     }
   }
 
