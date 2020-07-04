@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   { title: 'React patterns', author: 'Michael Chan', url: 'https://reactpatterns.com/', likes: 7 },
@@ -26,6 +27,28 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
+const initialUsers = [
+  {
+    username: 'user1',
+    name: 'User1',
+    password: 'pwd1'
+  },
+  {
+    username: 'user2',
+    name: 'User2',
+    password: 'pwd2'
+  }
+]
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb
+  initialBlogs,
+  nonExistingId,
+  blogsInDb,
+  initialUsers,
+  usersInDb
 }
