@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import tokenService from './services/tokens.js'
@@ -11,10 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const [message, setMessage] = useState(null)
   const [msgType, setMsgType] = useState(null)
@@ -73,22 +71,13 @@ const App = () => {
     }, 5000)
   }
 
-  const handleCreate = async event => {
-    event.preventDefault()
-    console.log('create new blog')
-    console.log(title)
-    console.log(author)
-    console.log(url)
+  const addBlog = async blogObject => {
+    blogFormRef.current.toggleVisibility()
 
     try {
-      const returnedBlog = await blogService.create(
-        { title, author, url }
-      )
+      const returnedBlog = await blogService.create(blogObject)
 
       setBlogs(blogs.concat(returnedBlog))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
 
       setMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
       setMsgType('success')
@@ -103,6 +92,14 @@ const App = () => {
       }, 5000)
     }
   }
+
+  const blogFormRef = useRef()
+
+  const blogForm = () => (
+    <Togglable buttonShowLabel='add blog' buttonHideLabel='cancel' ref={blogFormRef}>
+      <BlogForm createBlog={addBlog} />
+    </Togglable>
+  )
 
   if (user === null) {
     return (
@@ -142,40 +139,10 @@ const App = () => {
 
       <p>{user.username} logged in. <button onClick={handleLogout}>logout</button></p>
 
-      <h2>create new blog</h2>
-      <form onSubmit={handleCreate}>
-        <div>
-          <label>Title:</label>
-          <input
-            type="text"
-            value={title}
-            name="title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          <label>Author:</label>
-          <input
-            type="text"
-            value={author}
-            name="author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          <label>URL:</label>
-          <input
-            type="text"
-            value={url}
-            name="url"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button onChange={handleCreate}>add</button>
-      </form>
+      { blogForm() }
 
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+        <Blog key={blog.id} blog={blog} user={user} />
       )}
     </div>
   )
