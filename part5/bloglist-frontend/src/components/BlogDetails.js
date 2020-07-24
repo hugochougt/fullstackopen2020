@@ -1,21 +1,10 @@
-import React, { useState } from 'react'
-import blogService from '../services/blogs'
+import React from 'react'
 
-const BlogDetails = (props) => {
-  const [blog, setBlog] = useState(props.blog)
-
-  const handleLike = async blog => {
-    const newLikes = blog.likes + 1
-    await blogService.update(blog.id, { likes: newLikes })
-
-    setBlog(Object.assign({}, blog, { likes: newLikes }))
-  }
-
+const BlogDetails = ({ blog, likeBlog }) => {
   return (
     <>
-      <p>{ blog.url }</p>
-      <p>likes: { blog.likes } <button onClick={() => handleLike(blog)}>like</button></p>
-      <p>{ blog.author }</p>
+      <p className="url">{ blog.url }</p>
+      <p className="likes">likes: { blog.likes } <button className="like-btn" onClick={likeBlog}>like</button></p>
     </>
   )
 }
