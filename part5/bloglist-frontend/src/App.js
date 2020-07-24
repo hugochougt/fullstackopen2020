@@ -101,6 +101,14 @@ const App = () => {
     setBlogs(blogs.map(blog => blog.id !== id ? blog : {...returnedBlog, likes: newLikes }))
   }
 
+  const deleteBlog = async id => {
+    const blog = blogs.find(blog => blog.id === id)
+    if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
+      await blogService.destroy(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+    }
+  }
+
   const blogFormRef = useRef()
 
   const blogForm = () => (
@@ -150,7 +158,13 @@ const App = () => {
       { blogForm() }
 
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} user={user} likeBlog={() => likeBlog(blog.id)} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          user={user}
+          likeBlog={() => likeBlog(blog.id)}
+          deleteBlog={() => deleteBlog(blog.id)}
+        />
       )}
     </div>
   )
