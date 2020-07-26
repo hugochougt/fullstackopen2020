@@ -16,6 +16,11 @@ app.use('/api/tokens', tokensRouter)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true,

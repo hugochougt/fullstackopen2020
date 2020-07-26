@@ -28,7 +28,8 @@ tokensRouter.post('/', async (req, res) => {
     .send({
       token,
       username,
-      name: user.name
+      name: user.name,
+      id: user._id
     })
 })
 

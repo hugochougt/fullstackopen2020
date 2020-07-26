@@ -2,7 +2,7 @@ import React from 'react'
 import BlogDetails from './BlogDetails'
 import Togglable from './Togglable'
 
-const Blog = ({ blog, likeBlog, deleteBlog }) => (
+const Blog = ({ blog, user, likeBlog, deleteBlog }) => (
   <div className="blog-item">
     <p className="title">{blog.title}</p>
     <p className="author">{ blog.author }</p>
@@ -11,7 +11,7 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => (
         blog={blog}
         likeBlog={likeBlog}
       />
-      <button onClick={deleteBlog}>remove</button>
+      { user.id === blog.user.id ? <button className='remove-btn' onClick={deleteBlog}>remove</button> : null }
     </Togglable>
   </div>
 )
