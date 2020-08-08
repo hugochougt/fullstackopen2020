@@ -12,14 +12,20 @@ const notificationReducer = (state = null, action) => {
   }
 }
 
-export const setNotification = content => {
-  return {
-    type: SET_ACTION,
-    notification: content
+export const setNotification = (content, seconds) => {
+  return dispatch => {
+    dispatch({
+      type: SET_ACTION,
+      notification: content
+    })
+
+    setTimeout(() => {
+      dispatch(resetNotification())
+    }, seconds * 1000)
   }
 }
 
-export const resetNotification = () => {
+const resetNotification = () => {
   return {
     type: RESET
   }
