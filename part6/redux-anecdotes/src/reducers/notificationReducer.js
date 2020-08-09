@@ -1,12 +1,19 @@
 const SET_ACTION = 'SET_NOTIFICATION'
 const RESET = 'RESET'
 
-const notificationReducer = (state = null, action) => {
+const notificationReducer = (state = { content: null, lastTimeoutId: null }, action) => {
   switch (action.type) {
     case SET_ACTION:
-      return action.notification
+      if (typeof state.lastTimeoutId === 'number') {
+        clearTimeout(state.lastTimeoutId)
+      }
+
+      return {
+        content: action.content,
+        lastTimeoutId: action.lastTimeoutId
+      }
     case RESET:
-      return null
+      return {}
     default:
       return state
   }
@@ -14,14 +21,15 @@ const notificationReducer = (state = null, action) => {
 
 export const setNotification = (content, seconds) => {
   return dispatch => {
-    dispatch({
-      type: SET_ACTION,
-      notification: content
-    })
-
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       dispatch(resetNotification())
     }, seconds * 1000)
+
+    dispatch({
+      type: SET_ACTION,
+      content: content,
+      lastTimeoutId: timeoutId
+    })
   }
 }
 
