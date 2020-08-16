@@ -26,3 +26,16 @@
     - belongs to:
       - User
       - Blog
+
+## Databse
+
+- MongoDB
+- `npm install mongoose --save`
+
+## APIs
+
+### Users API
+
+- bcrypt: `npm install bcrypt --save`
+- mongoose-unique-validator: `npm install mongoose-unique-validator --save`
+- jsonwebtoken: `npm install jsonwebtoken --save`

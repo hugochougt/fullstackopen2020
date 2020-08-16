@@ -4,8 +4,18 @@ const chokidar = require('chokidar')
 const express = require('express')
 const path = require('path')
 require('express-async-errors')
+// [Mongoose Schema hasn't been registered for model](https://stackoverflow.com/a/27497785/888089)
+const mongoose = require('mongoose')
+require('./server/models/user')
+require('./server/models/blog')
+require('./server/models/comment')
 
-const { PORT, inProduction } = require('@util/common')
+const { PORT, inProduction, MONGODB_URI } = require('@util/common')
+
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
 
 const app = express()
 
