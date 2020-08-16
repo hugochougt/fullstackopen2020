@@ -1,7 +1,7 @@
 {
-  "name": "create-app",
+  "name": "bloglist-app",
   "version": "1.0.0",
-  "description": "A boilerplate",
+  "description": "A bloglist app",
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon index.js",
@@ -13,7 +13,7 @@
   "engines": {
     "node": ">=10.15"
   },
-  "author": "Jami Kousa",
+  "author": "zhaqiang",
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.8.3",

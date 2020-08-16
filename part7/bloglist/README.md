@@ -1,5 +1,19 @@
-# create-app
-Simple boilerplate
+# bloglist-app
+
+## Features ##
+
+- Blog posts list
+- Notification
+- User logs in and out
+- User creates new blog
+- User likes a blog
+- User deletes a blog
+- Users list
+- Individual user view
+- Individual blog view
+- Top navigation menu
+- Comments on blog posts
+- Improve appearance
 
 # What?
 
@@ -95,7 +109,7 @@ For backend see package.json and, for example, server/index.js for examples with
 
 #### webpack.config.js ####
 
-Webpack stuff. 
+Webpack stuff.
 From top to bottom:
   - Uses hot loading when in development mode
   - Has the aliases for frontend
