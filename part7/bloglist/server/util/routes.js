@@ -23,6 +23,6 @@ router.get('/blogs/:id', blogs.show)
 router.put('/blogs/:id', blogs.update)
 router.delete('/blogs/:id', blogs.destroy)
 
-router.post('/blogs/:blogId/comments', comments.create)
+router.post('/blogs/:id/comments', comments.create)
 
 module.exports = router

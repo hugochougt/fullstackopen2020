@@ -7,9 +7,7 @@
     - username
     - passwordHash
   - assocs:
-    - has many:
-      - Blog
-      - Comment, through Blog
+    - has many Blog
 - Blog:
   - attrs:
     - title:string, null: false
@@ -17,15 +15,13 @@
     - author:string, null: false
     - likes:integer, default: 0
   - assocs:
-    - belongs to: User
-    - has many: Comment
+    - belongs to User
+    - has many Comment
 - Comment:
   - attrs:
     - body:string, null: false
   - assocs:
-    - belongs to:
-      - User
-      - Blog
+    - belongs to Blog
 
 ## Databse
 
