@@ -19,7 +19,7 @@ const create = async (req, res) => {
   blog.comments = blog.comments.concat(savedComment._id)
   await blog.save()
 
-  res.send(savedComment.toJSON(), 201)
+  res.status(201).send(savedComment.toJSON())
 }
 
 module.exports = {

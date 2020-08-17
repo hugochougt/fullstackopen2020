@@ -33,7 +33,7 @@ const create = async (req, res) => {
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
-  res.send(savedBlog.toJSON(), 201)
+  res.status(201).send(savedBlog.toJSON())
 }
 
 const show = async (req, res) => {
