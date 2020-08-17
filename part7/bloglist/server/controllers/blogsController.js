@@ -37,7 +37,7 @@ const create = async (req, res) => {
 }
 
 const show = async (req, res) => {
-  const blog = await Blog.findById(req.params.id)
+  const blog = await Blog.findById(req.params.id).populate('comments')
   if (blog) {
     res.send(blog.toJSON())
   } else {
