@@ -39,7 +39,9 @@ const Authors = (props) => {
         </tbody>
       </table>
 
-      <SetAuthorBirthyearForm authors={result.data.allAuthors} />
+      {
+        props.logined && <SetAuthorBirthyearForm authors={result.data.allAuthors} />
+      }
     </div>
   )
 }
