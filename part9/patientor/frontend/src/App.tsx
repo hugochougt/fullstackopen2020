@@ -2,11 +2,9 @@ import React from "react";
 import axios from "axios";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { Button, Divider, Header, Container } from "semantic-ui-react";
-
 import { apiBaseUrl } from "./constants";
 import { useStateValue, setPatientList } from "./state";
 import { Patient } from "./types";
-
 import PatientListPage from "./PatientListPage";
 import PatientDetailsPage from "./PatientDetailsPage";
 

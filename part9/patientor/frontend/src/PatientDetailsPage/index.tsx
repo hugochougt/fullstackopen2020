@@ -2,13 +2,14 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Icon } from "semantic-ui-react";
-import { useStateValue, showPatient } from "../state";
-import { Patient } from "../types";
+import { useStateValue, showPatient, setDiagnosisList } from "../state";
+import { Patient, Diagnosis } from "../types";
 import { apiBaseUrl } from "../constants";
+import EntryDetails from "../EntryDetails";
 
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patient }, dispatch] = useStateValue();
+  const [{ patient, diagnoses }, dispatch] = useStateValue();
 
   React.useEffect(() => {
     const fetchPatientDetails = async () => {
@@ -26,6 +27,18 @@ const PatientDetailsPage: React.FC = () => {
       }
     };
 
+    const fetchDiagnosisList = async () => {
+      try {
+        const { data: diagnosisListFromApi } = await axios.get<Diagnosis[]>(
+          `${apiBaseUrl}/diagnoses`
+        );
+        dispatch(setDiagnosisList(diagnosisListFromApi));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchDiagnosisList();
     fetchPatientDetails();
   }, [id, patient.id, dispatch]);
 
@@ -46,6 +59,10 @@ const PatientDetailsPage: React.FC = () => {
       <p>dob: {patient.dateOfBirth}</p>
       <p>ssn: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
+      <h2>entries</h2>
+      {
+        patient.entries && patient.entries.map((entry) => <EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />)
+      }
     </div>
   );
 };

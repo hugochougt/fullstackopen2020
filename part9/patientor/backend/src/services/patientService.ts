@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import patients from '../../data/patients.json';
+import patients from '../../data/patients';
 import { Patient, PublicPatient, NewPatient } from '../types';
 
 const getNonSensitiveEntries = (): PublicPatient[] => {
