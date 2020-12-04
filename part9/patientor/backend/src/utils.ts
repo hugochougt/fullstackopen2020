@@ -9,24 +9,26 @@ import {
   HealthCheckRating,
   Discharge,
   EntryType,
+  Diagnosis,
   NewHealthCheckEntry,
   NewHospitalEntry,
   NewOccupationalHealthCareEntry,
 } from './types';
+import diagnoseData from '../data/diagnoses.json';
 
 const isString = (text: any): text is string => {
   return typeof text === 'string' || text instanceof String;
 };
 
-const isDate = (date: string): boolean => {
-  return Boolean(Date.parse(date));
+const isDate = (date: any): boolean => {
+  return isString(date) && Boolean(Date.parse(date));
 };
 
 const isGender = (param: any): param is Gender => {
   return Object.values(Gender).includes(param);
 };
 
-const isObject = (param: any): param is Object => {
+export const isObject = (param: unknown) => {
   return (typeof param  === 'object' && param !== null);
 };
 
@@ -34,36 +36,25 @@ const isHealthCheckRating = (param: any): param is HealthCheckRating => {
   return Object.values(HealthCheckRating).includes(param);
 };
 
-const parseStringAttr = (str: any, attr: string): string => {
+const isDischarge = (param: any): param is Discharge => {
+  return isObject(param) && isString(param.criteria) && isDate(param.date);
+};
+
+const isDiagnosisCodes = (param: any): param is string[] => {
+  if (!param) {
+    return true;
+  }
+
+  const codes = diagnoseData.map(diagnosis => diagnosis.code);
+  return param.every((code: any) => isString(code) && codes.includes(code));
+};
+
+const parseStringAttr = (str: unknown, attr: string): string => {
   if (!str || !isString(str)) {
-    throw new Error(`Incorrect or missing ${attr}}: ${str}`);
+    throw new Error(`Incorrect or missing ${attr}}: ${String(str)}`);
   }
 
   return str;
-}
-
-const parseName = (name: any): string => {
-  if (!name || !isString(name)) {
-    throw new Error('Incorrect or missing name: ' + name);
-  }
-
-  return name;
-};
-
-const parseSsn = (ssn: any): string => {
-  if (!ssn || !isString(ssn)) {
-    throw new Error('Incorrect or missing ssn: ' + ssn);
-  }
-
-  return ssn;
-};
-
-const parseOccupation = (occupation: any): string => {
-  if (!occupation || !isString(occupation)) {
-    throw new Error('Incorrect or missing occupation: ' + occupation);
-  }
-
-  return occupation;
 };
 
 const parseDate = (date: any): string => {
@@ -82,44 +73,22 @@ const parseGender = (gender: any): Gender => {
 };
 
 const parseRating = (rating: any): HealthCheckRating => {
-  if (!rating || !isHealthCheckRating(rating)) {
+  const ratingNumber = Number(rating);
+
+  if (!rating || !isHealthCheckRating(ratingNumber)) {
     throw new Error('Incorrect or missing rating: ' + rating);
   }
 
-  return rating;
+  return ratingNumber;
 };
 
-const parseDescription = (description: any): string => {
-  if (!description || !isString(description)) {
-    throw new Error('Incorrect or missing description: ' + description);
+const parseDischarge = (param: any): Discharge => {
+  if (!param|| !isDischarge(param)) {
+    throw new Error('Incorrect or missing discharge: ' + param);
   }
 
-  return description;
+  return param;
 };
-
-const parseSpecialist = (specialist: any): string => {
-  if (!specialist || !isString(specialist)) {
-    throw new Error('Incorrect or missing specialist: ' + specialist);
-  }
-
-  return specialist;
-};
-
-const parseDischarge = (discharge: any): Discharge => {
-  if (!discharge || !isObject(discharge)) {
-    throw new Error('Incorrect or missing discharge: ' + discharge);
-  }
-
-  if (!discharge.date || !isDate(discharge.date)) {
-    throw new Error('Incorrect or missing discharge date: ' + discharge.date);
-  }
-
-  if (!discharge.criteria || !isString(discharge.criteria)) {
-    throw new Error('Incorrect or missing discharge criteria: ' + discharge.criteria);
-  }
-
-  return discharge;
-}
 
 const parseSickLeave = (sickLeave: any): SickLeave | undefined => {
   if (!sickLeave || !isObject(sickLeave)) {
@@ -137,23 +106,32 @@ const parseSickLeave = (sickLeave: any): SickLeave | undefined => {
   return sickLeave;
 };
 
+const parseDiagnosisCodes = (diagnosisCodes: any): Array<Diagnosis['code']> => {
+  if (!isDiagnosisCodes(diagnosisCodes)) {
+    return [];
+  }
+
+  return diagnosisCodes;
+};
+
 export const toNewPatientEntry = (obj: any): NewPatient => {
   return {
-    name: parseName(obj.name),
+    name: parseStringAttr(obj.name, 'name'),
     dateOfBirth: parseDate(obj.dateOfBirth),
-    ssn: parseSsn(obj.ssn),
+    ssn: parseStringAttr(obj.ssn, 'ssn'),
     gender: parseGender(obj.gender),
-    occupation: parseOccupation(obj.occupation),
+    occupation: parseStringAttr(obj.occupation, 'occupation'),
   };
 };
 
 export const toNewHealthCheckEntry = (obj: any): NewHealthCheckEntry => {
   return {
     type: EntryType.HealthCheck,
-    description: parseDescription(obj.description),
+    description: parseStringAttr(obj.description, 'description'),
     date: parseDate(obj.date),
-    specialist: parseSpecialist(obj.specialist),
-    healthCheckRating: parseRating(obj.healthCheckRating)
+    specialist: parseStringAttr(obj.specialist, 'specialist'),
+    healthCheckRating: parseRating(obj.healthCheckRating),
+    diagnosisCodes: parseDiagnosisCodes(obj.diagnosisCodes)
   };
 };
 
@@ -163,7 +141,8 @@ export const toNewHospitalEntry = (obj: any): NewHospitalEntry => {
     description: parseStringAttr(obj.description, 'description'),
     date: parseDate(obj.date),
     specialist: parseStringAttr(obj.specialist, 'specialist'),
-    discharge: parseDischarge(obj.discharge)
+    discharge: parseDischarge(obj.discharge),
+    diagnosisCodes: parseDiagnosisCodes(obj.diagnosisCodes)
   };
 };
 
@@ -174,6 +153,7 @@ export const toNewOccupationalHealthCareEntry = (obj: any): NewOccupationalHealt
     date: parseDate(obj.date),
     specialist: parseStringAttr(obj.specialist, 'specialist'),
     employerName: parseStringAttr(obj.employerName, 'employerName'),
-    sickLeave: parseSickLeave(obj.sickLeave)
+    sickLeave: parseSickLeave(obj.sickLeave),
+    diagnosisCodes: parseDiagnosisCodes(obj.diagnosisCodes)
   };
 };

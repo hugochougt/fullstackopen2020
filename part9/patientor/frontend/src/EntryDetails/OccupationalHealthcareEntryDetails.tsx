@@ -1,12 +1,12 @@
 import React from "react";
-import { OccupationalHealthCareEntry, Diagnosis } from "../types";
+import { OccupationalHealthcareEntry, Diagnosis } from "../types";
 import {
   Segment,
   Icon,
 } from "semantic-ui-react";
 
 interface EntryProps {
-  entry: OccupationalHealthCareEntry;
+  entry: OccupationalHealthcareEntry;
   diagnoses: { [code: string]: Diagnosis };
 }
 
@@ -19,9 +19,9 @@ const OccupationalHealthcareEntryDetails = ({ entry, diagnoses }: EntryProps) =>
       <p style={{ color: "#ACACAC", fontStyle: "italic" }}>
         { entry.description }
       </p>
-      <p>
-        Sick leave: { `${entry.sickLeave.startDate} ~ ${entry.sickLeave.endDate}` }
-      </p>
+      {
+        entry.sickLeave && (<p> Sick leave: { `${entry.sickLeave.startDate} ~ ${entry.sickLeave.endDate}` } </p>)
+      }
       <ul>
         {
           entry.diagnosisCodes && entry.diagnosisCodes.map((code) => <li key={code}> { code }: { diagnoses[code] && diagnoses[code].name }</li>)

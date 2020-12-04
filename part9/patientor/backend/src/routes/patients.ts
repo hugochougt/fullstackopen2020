@@ -1,6 +1,7 @@
 import express from 'express';
 import patientService from '../services/patientService';
 import {
+  isObject,
   toNewPatientEntry,
   toNewHealthCheckEntry,
   toNewHospitalEntry,
@@ -38,6 +39,10 @@ router.post('/', (req, res) => {
 router.post('/:id/entries', (req, res) => {
   const patient = patientService.findById(req.params.id);
   let newEntry;
+
+  if (!req.body || !isObject(req.body)) {
+    return res.status(400).send('`body` is missing');
+  }
 
   switch (req.body.type) {
     case EntryType.HealthCheck:
